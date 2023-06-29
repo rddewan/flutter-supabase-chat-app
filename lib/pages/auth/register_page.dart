@@ -17,7 +17,7 @@ class RegisterPage extends StatefulWidget {
 class RegisterPageState extends State<RegisterPage> {
 
   bool _isLoading = false;
-  GlobalKey<FormState> _formKey = GlobalKey();
+  final GlobalKey<FormState> _formKey = GlobalKey();
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
   late TextEditingController _usernameController;
@@ -40,38 +40,64 @@ class RegisterPageState extends State<RegisterPage> {
 
   void _signUp() async {
 
-    try {
+    final isValid = _formKey.currentState?.validate();
 
-        setState(() {
-          _isLoading = true;
-        });
+    if (isValid != null && isValid) {
 
-        await supabase.auth.signUp(
-          email: _emailController.text,
-          password: _passwordController.text,
-          data: {'username': _usernameController.text.toLowerCase()}
-        );
+      try {
 
-        setState(() {
-          _isLoading = false;
-        });
+          setState(() {
+            _isLoading = true;
+          });
 
-        _navigateToLoginPage();
-        
-      } on AuthException catch (e) {
-        context.showSnackbar(message: e.message,backgroundColor: Colors.red);
-        setState(() {
-          _isLoading = false;
-        });
-        
-      }
-      catch (e) {
-        context.showSnackbar(message: e.toString(),backgroundColor: Colors.red);
-        setState(() {
-          _isLoading = false;
-        });
-        
-      }   
+          final isEmailExist = await supabase.from('profiles')
+            .select('email')
+            .eq('email', _emailController.text)
+            .limit(1)
+            .maybeSingle();
+
+          if (isEmailExist != null && isEmailExist['email'].toString().isNotEmpty) {
+            throw const AuthException('email already exist');
+          }
+
+          final isUserNameExist = await supabase.from('profiles')
+            .select('username')
+            .eq('username', _usernameController.text)
+            .limit(1)
+            .maybeSingle();
+
+          if (isUserNameExist != null && isUserNameExist['username'].toString().isNotEmpty) {
+            throw const AuthException('username already exist');
+          }
+
+          await supabase.auth.signUp(
+            email: _emailController.text,
+            password: _passwordController.text,
+            data: {'username': _usernameController.text.toLowerCase()}
+          );
+
+          setState(() {
+            _isLoading = false;
+          });
+
+          _navigateToLoginPage();
+          
+        } on AuthException catch (e) {
+          context.showSnackbar(message: e.message,backgroundColor: Colors.red);
+          setState(() {
+            _isLoading = false;
+          });
+          
+        }
+        catch (e) {
+          context.showSnackbar(message: e.toString(),backgroundColor: Colors.red);
+          setState(() {
+            _isLoading = false;
+          });
+          
+        }   
+    }
+
 
   }
 
