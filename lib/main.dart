@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_supabase_app/pages/splash_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flex_color_scheme/flex_color_scheme.dart';
+
 
 void main() async {
 
@@ -19,11 +21,20 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: SplashPage()
+      theme: FlexThemeData.light(
+        scheme: FlexScheme.deepOrangeM3,
+        useMaterial3: true,
+        useMaterial3ErrorColors: true,
       ),
+      darkTheme: FlexThemeData.dark(
+        scheme: FlexScheme.deepOrangeM3,
+        useMaterial3: true,
+        useMaterial3ErrorColors: true,
+      ),
+      themeMode: ThemeMode.system,
+      home: const SplashPage(),
     );
   }
 }
