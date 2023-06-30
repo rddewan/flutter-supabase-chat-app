@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_supabase_app/pages/auth/login_page.dart';
+import 'package:flutter_supabase_app/pages/splash_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
@@ -22,7 +22,7 @@ class MainApp extends StatelessWidget {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: LoginPage()
+        body: SplashPage()
       ),
     );
   }
