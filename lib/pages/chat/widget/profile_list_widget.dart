@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_supabase_app/models/profiles.dart';
+import 'package:flutter_supabase_app/pages/chat/private_chat.dart';
 import 'package:flutter_supabase_app/utils/constants.dart';
 
 class ProfileListWidget extends StatefulWidget {
@@ -43,19 +44,27 @@ class ProfileListWidgetState extends State<ProfileListWidget> {
 
               final profile = data[index];
               
-              return ListTile(
-                leading: CircleAvatar(
-                  foregroundImage: NetworkImage(profile.avatar),
+              return GestureDetector(
+                onTap: () {
+                  final roomId = "qwerwrwr";
+
+                  _navigateToPrivateChat(roomId);
+                                    
+                },
+                child: ListTile(
+                  leading: CircleAvatar(
+                    foregroundImage: NetworkImage(profile.avatar),
+                  ),
+                  title: Text(profile.userName),
+                  subtitle: profile.isOnline 
+                    ? Text(
+                      'Online',
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: Colors.green
+                      ),
+                    ) 
+                    : const Text('Offline'),
                 ),
-                title: Text(profile.userName),
-                subtitle: profile.isOnline 
-                  ? Text(
-                    'Online',
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: Colors.green
-                    ),
-                  ) 
-                  : const Text('Offline'),
               );
 
             },
@@ -74,5 +83,10 @@ class ProfileListWidgetState extends State<ProfileListWidget> {
 
       },
     );
+  }
+
+  void _navigateToPrivateChat(String roomId) {
+    Navigator.of(context)
+      .push(MaterialPageRoute(builder: (_) => PrivateChat(roomId: roomId)));
   }
 }
