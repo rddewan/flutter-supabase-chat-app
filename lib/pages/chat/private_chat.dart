@@ -62,6 +62,7 @@ class PrivateChatState extends State<PrivateChat> {
                     )
                     : ListView.builder(
                         itemCount: messages.length,
+                        reverse: true,
                         itemBuilder: (context, index) {
                           final message = messages[index];
                           return ChatBubble(message: message);

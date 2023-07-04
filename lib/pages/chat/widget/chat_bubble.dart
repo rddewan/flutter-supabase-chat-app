@@ -23,7 +23,7 @@ const ChatBubble({ Key? key, required this.message }) : super(key: key);
           ),
           decoration: BoxDecoration(
             color: message.isMine
-                ? Theme.of(context).primaryColor
+                ? Theme.of(context).primaryColorLight
                 : Colors.grey[300],
             borderRadius: message.isMine 
               ? const BorderRadius.only(
@@ -53,6 +53,10 @@ const ChatBubble({ Key? key, required this.message }) : super(key: key);
       const SizedBox(width: 8),
 
     ];
+
+    if (message.isMine) {
+      chatContents = chatContents.reversed.toList();
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

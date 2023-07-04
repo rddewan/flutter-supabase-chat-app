@@ -45,8 +45,8 @@ class ProfileListWidgetState extends State<ProfileListWidget> {
               final profile = data[index];
               
               return GestureDetector(
-                onTap: () {
-                  final roomId = "qwerwrwr";
+                onTap: () async {
+                  final roomId = await _createPrivateRoom(profile.id);
 
                   _navigateToPrivateChat(roomId);
                                     
@@ -83,6 +83,15 @@ class ProfileListWidgetState extends State<ProfileListWidget> {
 
       },
     );
+  }
+
+  Future<String> _createPrivateRoom(String anotherUserId) async {
+    final String data = await supabase.rpc(
+      'create_private_room',
+      params: {'other_user_id': anotherUserId}
+    );
+
+    return data;
   }
 
   void _navigateToPrivateChat(String roomId) {
