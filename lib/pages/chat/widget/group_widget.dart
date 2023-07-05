@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_supabase_app/pages/chat/group_page.dart';
 import 'package:flutter_supabase_app/utils/constants.dart';
 
 import '../../../models/group.dart';
@@ -51,12 +52,19 @@ class GroupWidgetState extends State<GroupWidget> {
 
                 final group = data[index];
 
-                return CircleAvatar(
-                  backgroundColor: Theme.of(context).primaryColorLight,
-                  radius: 32,
-                  child: Text(
-                    group.name.length > 5 ? group.name.substring(0,5) : group.name,
-                    style:  Theme.of(context).textTheme.titleMedium,
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context, 
+                      MaterialPageRoute(builder: (_) => GroupPage(group: group)));
+                  },
+                  child: CircleAvatar(
+                    backgroundColor: Theme.of(context).primaryColorLight,
+                    radius: 32,
+                    child: Text(
+                      group.name.length > 5 ? group.name.substring(0,5) : group.name,
+                      style:  Theme.of(context).textTheme.titleMedium,
+                    ),
                   ),
                 );
               },
