@@ -45,6 +45,7 @@ class GroupWidgetState extends State<GroupWidget> {
           return SizedBox(
             height: 50,
             child: ListView.builder(
+              scrollDirection: Axis.horizontal,
               itemCount: data.length,
               itemBuilder: (context, index) {
 
@@ -54,7 +55,7 @@ class GroupWidgetState extends State<GroupWidget> {
                   backgroundColor: Theme.of(context).primaryColorLight,
                   radius: 32,
                   child: Text(
-                    group.name.substring(0,5),
+                    group.name.length > 5 ? group.name.substring(0,5) : group.name,
                     style:  Theme.of(context).textTheme.titleMedium,
                   ),
                 );
