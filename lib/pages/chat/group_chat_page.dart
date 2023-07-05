@@ -2,7 +2,8 @@
 import 'package:flutter/material.dart';
 
 class GroupChatPage extends StatefulWidget {
-  const GroupChatPage({ Key? key }) : super(key: key);
+  final String roomId;
+  const GroupChatPage({ Key? key, required this.roomId }) : super(key: key);
 
   @override
   GroupChatPageState createState() => GroupChatPageState();
@@ -11,8 +12,12 @@ class GroupChatPage extends StatefulWidget {
 class GroupChatPageState extends State<GroupChatPage> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Group Chat'),
+        centerTitle: true,
+      ),
+      body: Column(),
     );
   }
 }

@@ -1,7 +1,10 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_supabase_app/pages/chat/group_chat_page.dart';
 import 'package:flutter_supabase_app/pages/chat/group_page.dart';
 import 'package:flutter_supabase_app/utils/constants.dart';
+import 'package:flutter_supabase_app/utils/snackbar_extension.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../models/group.dart';
 
@@ -54,9 +57,7 @@ class GroupWidgetState extends State<GroupWidget> {
 
                 return GestureDetector(
                   onTap: () {
-                    Navigator.push(
-                      context, 
-                      MaterialPageRoute(builder: (_) => GroupPage(group: group)));
+                    _checkIfUserAlreadyInGroup(group);
                   },
                   child: CircleAvatar(
                     backgroundColor: Theme.of(context).primaryColorLight,
@@ -78,5 +79,40 @@ class GroupWidgetState extends State<GroupWidget> {
         
       },
     );
+  }
+
+  void _checkIfUserAlreadyInGroup(Group group) async {
+
+    try {
+
+      final List<dynamic> result = await supabase
+        .from('chat_room_participants')
+        .select('*')
+        .eq('user_id', supabase.auth.currentUser?.id)
+        .eq('room_id', group.id);
+
+      if (result.isEmpty) {
+        _navigateToGroupPage(group);
+      }
+      else {
+        _navigateToGroupChatPage(group);
+      }
+      
+    } on PostgrestException catch (e) {
+      context.showSnackbar(message: e.message,backgroundColor: Colors.red);
+    }
+
+  }
+
+  void _navigateToGroupPage(Group group) {
+    Navigator.push(
+      context, 
+      MaterialPageRoute(builder: (_) => GroupPage(group: group)));
+  }
+
+  void _navigateToGroupChatPage(Group group) {
+    Navigator.push(
+      context, 
+      MaterialPageRoute(builder: (_) => GroupChatPage(roomId: group.id)));
   }
 }

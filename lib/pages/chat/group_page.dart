@@ -68,6 +68,6 @@ class GroupPageState extends State<GroupPage> {
   void _navigateToGroupChatPage() {
     Navigator.push(
       context, 
-      MaterialPageRoute(builder: (_) => const GroupChatPage()));
+      MaterialPageRoute(builder: (_) => GroupChatPage(roomId: widget.group.id)));
   }
 }
