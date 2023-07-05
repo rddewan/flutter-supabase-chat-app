@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_supabase_app/pages/chat/widget/group_widget.dart';
 import 'package:flutter_supabase_app/pages/chat/widget/profile_list_widget.dart';
 import 'package:flutter_supabase_app/utils/constants.dart';
 import 'package:flutter_supabase_app/utils/snackbar_extension.dart';
@@ -78,6 +79,17 @@ class ChatPageState extends State<ChatPage> {
       ),
       body: const CustomScrollView(
         slivers: [
+
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text('Groups'),
+            ),
+          ),
+
+          SliverToBoxAdapter(
+            child: GroupWidget(),
+          ),
 
           SliverToBoxAdapter(
             child: Padding(
