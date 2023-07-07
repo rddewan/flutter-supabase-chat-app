@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_supabase_app/models/room_member.dart';
 import 'package:flutter_supabase_app/pages/chat/widget/group_chat_bubble.dart';
 
 import '../../models/chat_message.dart';
@@ -18,17 +19,20 @@ class GroupChatPage extends StatefulWidget {
 class GroupChatPageState extends State<GroupChatPage> {
 
   Stream<List<ChatMessage>> _messageStream = Stream.value([]);
+  Stream<List<RoomMember>> _roomMembers = Stream.value([]);
   String _groupName = '';
+  String _totalMembers = '0';
 
   @override
   void initState() {    
     super.initState();
     _loadChatMessages();
     _loadGroupName();
+    _countGroupsMembers();
   }
 
   @override
-  void dispose() {   
+  void dispose() {  
     super.dispose();
   }
 
@@ -55,12 +59,34 @@ class GroupChatPageState extends State<GroupChatPage> {
           .fromMap(map: map, myUserId: myUserId)).toList());
   }
   
+  void _countGroupsMembers() async {
+    _roomMembers = supabase.from('chat_room_participants') 
+      .stream(primaryKey: ['room_id'])
+      .eq('room_id', widget.roomId)
+      .map((event) => event
+        .map((map) => RoomMember.fromMap(map: map)).toList());
+
+    _roomMembers.listen((event) {
+      setState(() {
+        _totalMembers = event.length.toString();
+      });
+  });
+  
+  
+
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(_groupName),
         centerTitle: true,
+        actions: [
+
+          CircleAvatar(
+            child: Text(_totalMembers),
+          )
+        ],
       ),
       body: StreamBuilder(
         stream: _messageStream,
