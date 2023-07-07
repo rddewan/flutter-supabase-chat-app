@@ -18,16 +18,30 @@ class GroupChatPage extends StatefulWidget {
 class GroupChatPageState extends State<GroupChatPage> {
 
   Stream<List<ChatMessage>> _messageStream = Stream.value([]);
+  String _groupName = '';
 
   @override
   void initState() {    
     super.initState();
     _loadChatMessages();
+    _loadGroupName();
   }
 
   @override
   void dispose() {   
     super.dispose();
+  }
+
+  void _loadGroupName() async {
+    final record = await supabase.from('chat_room')
+      .select('name')
+      .eq('id', widget.roomId)
+      .limit(1)
+      .maybeSingle();
+
+    setState(() {
+      _groupName = record['name'];
+    });
   }
 
   void _loadChatMessages() async {
@@ -45,7 +59,7 @@ class GroupChatPageState extends State<GroupChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Group Chat'),
+        title: Text(_groupName),
         centerTitle: true,
       ),
       body: StreamBuilder(
