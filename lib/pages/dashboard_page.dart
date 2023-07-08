@@ -4,6 +4,9 @@ import 'package:flutter_supabase_app/models/profiles.dart';
 import 'package:flutter_supabase_app/pages/auth/login_page.dart';
 import 'package:flutter_supabase_app/pages/chat/chat_page.dart';
 import 'package:flutter_supabase_app/utils/constants.dart';
+import 'package:flutter_supabase_app/utils/snackbar_extension.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({ Key? key }) : super(key: key);
@@ -75,21 +78,25 @@ class DashboardPageState extends State<DashboardPage> {
                       bottom: 10,
                       child: IconButton.filled(
                         onPressed: () {
+                          _pickProfileImage();
 
                         }, 
                         icon: const Icon(Icons.camera_enhance)),
-                    )
+                    ),
+                    
                   ]
                   else ...[
                     const Center(
                       child: CircularProgressIndicator.adaptive(),
                     )
-                  ]
-                  
+                  ],        
                   
                 ],
               ),
-            )
+            ),
+
+            Text(_profile?.userName ?? ''),  
+                 
           ],
         ),
       ),
@@ -102,6 +109,40 @@ class DashboardPageState extends State<DashboardPage> {
       ),
       
     );
+  }
+
+  void _pickProfileImage() async {
+    final picker = ImagePicker();
+    final file = await picker.pickImage(source: ImageSource.gallery);
+   
+    if (file != null) {
+
+      final data = await file.readAsBytes();
+
+      try {
+
+        setState(() {
+          isLoading = true;
+        });
+
+        supabase.storage.from('default')
+          .uploadBinary(
+            file.path.split('/').last, 
+            data,
+            fileOptions: const FileOptions(upsert: true)
+          );
+
+        setState(() {
+          isLoading = false;
+        });
+        
+      } on PostgrestException catch (e) {
+        if (!mounted) return;
+        context.showSnackbar(message: e.message, backgroundColor: Colors.red);
+        
+      }
+
+    } 
   }
 
   void _navigateToLogInPage() {
