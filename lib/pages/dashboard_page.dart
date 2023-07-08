@@ -41,6 +41,7 @@ class DashboardPageState extends State<DashboardPage> {
       });
   }
 
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,7 +97,7 @@ class DashboardPageState extends State<DashboardPage> {
             ),
 
             Text(_profile?.userName ?? ''),  
-                 
+
           ],
         ),
       ),
@@ -132,6 +133,8 @@ class DashboardPageState extends State<DashboardPage> {
             fileOptions: const FileOptions(upsert: true)
           );
 
+        await _getAvatarUrl(file.path.split('/').last);
+
         setState(() {
           isLoading = false;
         });
@@ -143,6 +146,30 @@ class DashboardPageState extends State<DashboardPage> {
       }
 
     } 
+  }
+
+  Future<void> _getAvatarUrl(String? name) async {
+    if (name != null) {
+      final url = supabase.storage
+        .from('default')
+        .getPublicUrl(name);
+
+      await _updateProfileAvatarUrl(url);
+
+    }
+
+  }
+
+  Future<void> _updateProfileAvatarUrl(String url) async {
+    try {
+
+      await supabase.from('profiles')
+        .update({'avatar_url': url})
+        .eq('id', supabase.auth.currentUser?.id);
+      
+    } on PostgrestException catch (e) {
+      context.showSnackbar(message: e.message, backgroundColor: Colors.red);      
+    }
   }
 
   void _navigateToLogInPage() {
