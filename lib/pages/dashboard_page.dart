@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_supabase_app/models/profiles.dart';
 import 'package:flutter_supabase_app/pages/auth/login_page.dart';
 import 'package:flutter_supabase_app/pages/chat/chat_page.dart';
 import 'package:flutter_supabase_app/utils/constants.dart';
@@ -13,6 +14,30 @@ class DashboardPage extends StatefulWidget {
 
 class DashboardPageState extends State<DashboardPage> {
   String numberOfUsers = '0';
+  Profile? _profile;
+  bool isLoading = false;
+
+  @override
+  void initState() {    
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _getUserProfile();      
+    });
+  }
+
+  void _getUserProfile() {
+    supabase.from('profiles')
+      .stream(primaryKey: ['id'])
+      .eq('id', supabase.auth.currentUser?.id)
+      .map((event) => event.map((e) => Profile.fromMap(e)).toList())
+      .listen((event) {
+        setState(() {
+          _profile = event.first;
+        });
+        
+      });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,10 +54,42 @@ class DashboardPageState extends State<DashboardPage> {
           )
         ],
       ),
-      body: Center(
+      body: SingleChildScrollView(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Number of users: $numberOfUsers')
+            
+            Center(
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+
+                  if (_profile != null)... [
+                    CircleAvatar(
+                      radius: 60,
+                      foregroundImage: NetworkImage(_profile!.avatar),
+                    ),
+
+                    Positioned(
+                      right: -10,
+                      bottom: 10,
+                      child: IconButton.filled(
+                        onPressed: () {
+
+                        }, 
+                        icon: const Icon(Icons.camera_enhance)),
+                    )
+                  ]
+                  else ...[
+                    const Center(
+                      child: CircularProgressIndicator.adaptive(),
+                    )
+                  ]
+                  
+                  
+                ],
+              ),
+            )
           ],
         ),
       ),
